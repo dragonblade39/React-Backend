@@ -1,24 +1,21 @@
 const express = require("express");
 const router = express.Router();
 const loginSchema = require("../schema/fitnessSchema");
-
-// router.post("/create-fitness", (req, res, next) => {
-//   const { name, username, email, password, password1, gender } = req.body;
-//   if (password === password1) {
-//     loginSchema
-//       .create({ name, username, email, password, gender })
-//       .then((data) => {})
-//       .catch((err) => {
-//         next(err); // Pass the error to the error handling middleware
-//       });
-//   } else {
-//     console.log("Passwords do not match.");
-//     res.json("Passwords not matched");
-//   }
-// });
+const bodyParser = require("body-parser");
 
 router.post("/create-fitness", async (req, res, next) => {
-  const { name, username, email, password, password1, gender } = req.body;
+  const {
+    name,
+    username,
+    email,
+    password,
+    password1,
+    gender,
+    date,
+    height,
+    weight,
+    bmi,
+  } = req.body;
 
   // Check if a user with the same username already exists
   const existingUser = await loginSchema.findOne({ username: username });
@@ -44,6 +41,10 @@ router.post("/create-fitness", async (req, res, next) => {
         email,
         password,
         gender,
+        date,
+        height,
+        weight,
+        bmi,
       });
       return res.json("User added successfully");
     } catch (error) {
@@ -109,6 +110,85 @@ router.post("/login", (req, res) => {
       return res.status(400).json("No record exits");
     }
   });
+});
+
+router.post("/homepage", (req, res) => {
+  const { username } = req.body;
+  loginSchema.findOne({ username: username }).then((login) => {
+    if (login) {
+      return res.json(login);
+    } else {
+      return res.status(400).json("No record exits");
+    }
+  });
+});
+
+router.post("/profile", (req, res) => {
+  const { username } = req.body;
+  loginSchema.findOne({ username: username }).then((login) => {
+    if (login) {
+      return res.json(login);
+    }
+  });
+});
+
+router.post("/update", async (req, res) => {
+  try {
+    const {
+      username,
+      name,
+      email,
+      password,
+      gender,
+      date,
+      height,
+      weight,
+      bmi,
+    } = req.body;
+
+    // Check if a user with the provided username exists in the database
+    const existingUser = await loginSchema.findOne({ username });
+
+    if (existingUser) {
+      // Update the existing user's information
+      existingUser.name = name;
+      existingUser.email = email;
+      existingUser.password = password;
+      existingUser.gender = gender;
+      existingUser.date = date;
+      existingUser.height = height;
+      existingUser.weight = weight;
+      existingUser.bmi = bmi;
+      await existingUser.save();
+
+      res.status(200).json({ message: "User data updated successfully" });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    res.status(400).json({ message: "Failed to save/update user data" });
+  }
+});
+
+router.delete("/update/:username", async (req, res) => {
+  try {
+    const usernameToDelete = req.params.username;
+
+    // Find the user with the provided username and delete it
+    const deletedUser = await loginSchema.findOneAndDelete({
+      username: usernameToDelete,
+    });
+
+    if (deletedUser) {
+      res
+        .status(200)
+        .json({ message: "User deleted successfully", deletedUser });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete user" });
+  }
 });
 
 module.exports = router;

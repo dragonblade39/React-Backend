@@ -7,6 +7,10 @@ const fitnessSchema = new mongoose.Schema(
     email: { type: String },
     password: { type: String },
     gender: { type: String },
+    date: { type: Date },
+    height: { type: Number },
+    weight: { type: Number },
+    bmi: { type: Number },
   },
   {
     collection: "Signup",
