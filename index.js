@@ -2,7 +2,8 @@ const mongoose = require("mongoose");
 const express = require("express");
 const loginRoutes = require("./loginRoutes/loginRoutes");
 const cors = require("cors");
-
+const dataRoutes = require("./loginRoutes/dataRoutes");
+const historyRoutes = require("./loginRoutes/historyRoutes");
 const app = express();
 
 mongoose.set("strictQuery", true);
@@ -20,6 +21,8 @@ db.on("error", () => {
 app.use(express.json());
 app.use(cors());
 app.use("/signup", loginRoutes);
+app.use("/data", dataRoutes);
+app.use("/history", historyRoutes);
 const port = 5500;
 app.listen(port, () => {
   console.log("Server Started on " + port);
