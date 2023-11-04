@@ -52,4 +52,38 @@ router.get("/totalCalories", async (req, res) => {
     res.status(500).json({ error: "Error fetching data" });
   }
 });
+
+router.get("/", async (req, res) => {
+  const username = req.query.username;
+
+  if (!username) {
+    return res.status(400).json({ error: "Username parameter is missing" });
+  }
+
+  try {
+    const filteredData = await History.find({ username: username });
+
+    res.json(filteredData);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching data" });
+  }
+});
+
+router.delete("/deleteTasks1", async (req, res, next) => {
+  const { username } = req.body;
+
+  try {
+    const deletedTask = await History.deleteMany({
+      username: username,
+    });
+
+    if (deletedTask) {
+      return res.json("Tasks deleted successfully");
+    } else {
+      return res.status(404).json("Task not found");
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 module.exports = router;

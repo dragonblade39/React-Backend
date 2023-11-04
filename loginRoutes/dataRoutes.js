@@ -10,11 +10,14 @@ router.post("/createTask", async (req, res, next) => {
     const currentDate = new Date();
     const currentTime = currentDate.getHours() * 60 + currentDate.getMinutes(); // Convert to minutes
 
-    if (new Date(date) < currentDate || fromTime < currentTime) {
-      return res
-        .status(400)
-        .json("Invalid date and time. Please choose a future date and time.");
-    }
+    const selectedDate = new Date(date);
+    const selectedTime = selectedDate.getTime(); // Convert to milliseconds
+
+    // if (selectedTime <= currentDate.getTime() || fromTime < currentTime) {
+    //   return res
+    //     .status(400)
+    //     .json("Invalid date and time. Please choose a future date and time.");
+    // }
 
     const existingTask = await Data.findOne({
       selectedWorkoutType: selectedWorkoutType,
@@ -66,6 +69,43 @@ router.get("/", async (req, res) => {
     res.json(filteredData);
   } catch (error) {
     res.status(500).json({ error: "Error fetching data" });
+  }
+});
+
+router.delete("/deleteTask", async (req, res, next) => {
+  const { username, selectedWorkoutType } = req.body;
+
+  try {
+    const deletedTask = await Data.findOneAndDelete({
+      username: username,
+      selectedWorkoutType: selectedWorkoutType,
+    });
+
+    if (deletedTask) {
+      return res.json("Task deleted successfully");
+    } else {
+      return res.status(404).json("Task not found");
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.delete("/deleteTasks", async (req, res, next) => {
+  const { username } = req.body;
+
+  try {
+    const deletedTask = await Data.deleteMany({
+      username: username,
+    });
+
+    if (deletedTask) {
+      return res.json("Tasks deleted successfully");
+    } else {
+      return res.status(404).json("Task not found");
+    }
+  } catch (error) {
+    next(error);
   }
 });
 
