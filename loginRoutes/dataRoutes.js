@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Data = require("../schema/Data");
+const mongoose = require("mongoose");
 
 router.post("/createTask", async (req, res, next) => {
   const { username, workoutType, selectedWorkoutType, date, fromTime, toTime } =
@@ -106,6 +107,32 @@ router.delete("/deleteTasks", async (req, res, next) => {
     }
   } catch (error) {
     next(error);
+  }
+});
+
+router.post("/updateTask", async (req, res, next) => {
+  const { _id, workoutType, selectedWorkoutType, date, fromTime, toTime } =
+    req.body;
+
+  try {
+    const existingUser = await Data.findOne({
+      _id: _id,
+    });
+
+    if (existingUser) {
+      existingUser.workoutType = workoutType;
+      existingUser.selectedWorkoutType = selectedWorkoutType;
+      existingUser.date = date;
+      existingUser.fromTime = fromTime;
+      existingUser.toTime = toTime;
+      await existingUser.save(); // Save the updated document
+      res.status(200).json({ message: "User data updated successfully" });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
