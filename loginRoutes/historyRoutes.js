@@ -47,7 +47,7 @@ router.get("/totalCalories", async (req, res) => {
       totalCalories += entry.calories;
     }
 
-    res.json({ totalCalories }); // Sending totalCalories as JSON response
+    res.status(200).json({ totalCalories }); // Sending totalCalories as JSON response
   } catch (error) {
     res.status(500).json({ error: "Error fetching data" });
   }

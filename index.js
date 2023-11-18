@@ -23,7 +23,7 @@ app.use(cors());
 app.use("/signup", loginRoutes);
 app.use("/data", dataRoutes);
 app.use("/history", historyRoutes);
-const port = 5500;
+const port = 5501;
 app.listen(port, () => {
   console.log("Server Started on " + port);
 });
