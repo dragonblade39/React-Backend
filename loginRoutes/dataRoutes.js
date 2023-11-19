@@ -14,11 +14,11 @@ router.post("/createTask", async (req, res, next) => {
     const selectedDate = new Date(date);
     const selectedTime = selectedDate.getTime(); // Convert to milliseconds
 
-    if (selectedTime <= currentDate.getTime() || fromTime < currentTime) {
-      return res
-        .status(400)
-        .json("Invalid date and time. Please choose a future date and time.");
-    }
+    // if (selectedTime <= currentDate.getTime() || fromTime < currentTime) {
+    //   return res
+    //     .status(400)
+    //     .json("Invalid date and time. Please choose a future date and time.");
+    // }
 
     const existingTask = await Data.findOne({
       selectedWorkoutType: selectedWorkoutType,
